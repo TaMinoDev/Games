@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMPOSTER (Besser als ChatGPT)</title>
+    <style>
+        html {
+            background-color: #1e1e1e;
+        }
+        body {
+            background-color: #2e2e2e;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 5px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        #main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        h1 {
+            text-align: center;
+            animation: changeColor 120s;
+        }
+        button {
+            outline: none;
+            border: none;
+            background-color: #3e3e3e;<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMPOSTER (Besser als ChatGPT)</title>
+    <style>
+        html {
+            background-color: #1e1e1e;
+        }
+        body {
+            background-color: #2e2e2e;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 5px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        #main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        h1 {
+            text-align: center;
+            animation: changeColor 120s;
+        }
+        button {
+            outline: none;
+            border: none;
+            background-color: #3e3e3e;
+            color: white;
+            transition: 0.5s;
+            font-size: 50px;
+            border-radius: 15px;
+            padding: 5px;
+        }
+        button:hover {
+            background-color: #4e4e4e;
+            transform: rotate(-2.5deg);
+        }
+        input {
+            margin: 5px;
+            border-radius: 8px;
+            outline: none;
+            padding: 5px;
+        }
+        select {
+            padding: 5px;
+            margin: 5px;
+            border-radius: 8px;
+            color: white;
+            background-color: #464646;
+            outline: none;
+        }
+        @keyframes changeColor {
+            0% {
+                color: #ffffff;
+            }
+            50% {
+                color: #ff0000;
+            }
+            100% {
+                color: #ffffff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>IMPOSTER</h1>
+    <div id="main"><button onclick="startGame()">Start</button></div>
+    </div>
+    <div id="pointsList">
+    <script>
+        const main = document.getElementById('main');
+        const pointsList = document.getElementById('pointsList');
+
+        let points = {};
+        let names = [];
+        let validNames = false;
+        let gamemode = false;
+        let round = 0;
+        let imposter = '';
+        let word = '';
+        let imposterWord = '';
+        let telePromter = '';
+        let votes = {};
+        let voted = 0;
+
+        const words = {
+            "animals": {
+                "1":{
+                    "crew": "Monkey",
+                    "imposter": "Banana",
+                },
+                "2":{
+                    "crew": "Cameleon",
+                    "imposter": "Camoflage",
+                },
+                "3":{
+                    "crew": "giraffe",
+                    "imposter": "loooooooooooooooooooooooooooooong body",
+                },
+                "4":{
+                    "crew": "Dog",
+                    "imposter": "Bone",
+                },
+                "5":{
+                    "crew": "ant",
+                    "imposter": "small",
+                },
+                "6":{
+                    "crew": "baboon",
+                    "imposter": "Trump",
+                },
+                "7": {
+                    "crew": "Lama",
+                    "imposter": "Spucke"
+                },
+                "7": {
+                    "crew": "fly",
+                    "imposter": "ignoring open windows and bussing at night"
+                },
+                "8":{
+                    "crew": "Dino 🦖",
+                    "imposter": "Living in a park... on an iland",
+                },
+                "9": {
+                    "crew": "Human",
+                    "imposter": "Evolutionary slip-up"
+                },
+                "10":{
+                    "crew": "Coala",
+                    "imposter": "Eucalyptus inhaler",
+                },
+            },
+            "items": {
+                "1":{
+                    "crew": "box",
+                    "imposter": "IKEA",
+                },
+                "2":{
+                    "crew": "Schrödingers Cat",
+                    "imposter": "Meawing from a box",
+                },
+                "3":{
+                    "crew": "jupiter",
+                    "imposter": "gas-sphere",
+                },
+                "4":{
+                    "crew": "knife",
+                    "imposter": "sharp metall",
+                },
+                "5":{
+                    "crew": "Submarine",
+                    "imposter": "Rarly open windows",
+                },
+                "6":{
+                    "crew": "Tire",
+                    "imposter": "Car",
+                },
+                "7": {
+                    "crew": "Train 🚄",
+                    "imposter": "Ticket"
+                },
+                "8":{
+                    "crew": "Stocks",
+                    "imposter": "BUY OR SELL?!",
+                },
+                "9": {
+                    "crew": "Pen",
+                    "imposter": "Hand written"
+                },
+                "10":{
+                    "crew": "piano",
+                    "imposter": "many keys",
+                },
+            }
+        }
+
+        function startGame(){
+            if(validNames === false){
+                main.innerHTML = '<span>Write the Name of all Players split bay an ',' in here: </span><br><input id="PlayersInput"><button onclick="checkBefor()">Confirm</button>';
+            } else if(validNames === true){
+                main.innerHTML = `<span>Choose a category: </span><br><select id="typeGamemode">
+                    <option value="animals">Animals</option>
+                    <option value="items">Items</option>
+            </select><button onclick="checkBefor()">Confirm</button>`;
+            }
+        }
+
+        function checkBefor(){
+            if(validNames === false){
+                names = document.getElementById('PlayersInput').value.trim();
+                names = names.split(',').map(name => name.trim());
+                console.log(names);
+                validNames = true;
+                names.forEach(e => {
+                    if(!points[e]){
+                        points[e] = 0;
+                    }
+                });
+                updatePoints();
+                startGame();
+            } else if(gamemode === false){
+                const typeGamemode = document.getElementById('typeGamemode');
+                gamemode = typeGamemode.value;
+                igniteGame();
+            }
+        }
+
+        function random(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function igniteGame(){
+            round++;
+            alert('Round ' + round);
+            let wert = random(1, 10);
+            console.log('Value: ' + wert + ' || gamemode: ' + gamemode);
+            console.log(words[gamemode][wert]);
+            word = words[gamemode][wert].crew;
+            imposterWord = words[gamemode][wert].imposter;
+            
+            let person = names[random(0, names.length - 1)]; 
+            imposter = person;
+            
+            telePromter = '';
+            names.forEach((e) => {
+                if(imposter === e){
+                    telePromter = telePromter + `<b style="cursor: pointer" onclick="alert('Imposter - ${imposterWord}');">${e}</b><br>`;
+                } else {
+                    telePromter = telePromter + `<b style="cursor: pointer" onclick="alert('Crewmate - ${word}');">${e}</b><br>`;
+                }
+            });
+            main.innerHTML = `<h2>Who is the Imposter?</h2><br><h4>Click on your Name and memorize your word and if you are an crewmate or not</h4>${telePromter}<br><button onclick="startRound()">Next Phase</button>`;
+        }
+
+        function startRound(){
+            let minuten = 3;
+            let sekunden = 0;
+
+            main.innerHTML = `<h2>${minuten}:${sekunden < 10 ? '0' : ''}${sekunden}</h2>`;
+
+            let inter = setInterval(() => {
+                if (sekunden === 0 && minuten > 0) {
+                    sekunden = 59;
+                    minuten--;
+                } 
+                else if (sekunden > 0) {
+                    sekunden--;
+                } 
+                else {
+                    main.innerHTML = `<h2>Zeit abgelaufen</h2>`;
+                    clearInterval(inter);
+                    vote();
+                    return;
+                }
+
+                main.innerHTML = `<h2>${minuten}:${sekunden < 10 ? '0' : ''}${sekunden}</h2>`;
+            }, 1000);
+        }
+
+        function vote(){
+            votes = {};
+            voted = 0;
+            telePromter = '';
+            names.forEach(e => {
+                votes[e] = 0;
+                telePromter = telePromter + `<button onclick="voteFor('${e}')">${e}</button><br>`;
+            });
+            main.innerHTML = `<h3>Who is the Imposter click <b>ONE TIME</b> to Vote (each player has one vote)</h3><br>${telePromter}`;
+            
+        }
+
+        function voteFor(mate){
+            votes[mate]++;
+            voted++;
+            afterVote();
+        }
+
+        function afterVote(){
+            telePromter = '';
+            names.forEach(e => {
+                if(votes[e] > 0){
+                    telePromter = telePromter + `<b>${e}</b><span> has ${votes[e]} Votes</span><br>`;
+                }
+            });
+            if(voted === names.length){
+                main.innerHTML = `<h2>Voting ended</h2><br><span>Voted against:</span><br>${telePromter}<br><button onclick="ShowImposter()">reveal Imposter</button>`;
+            }
+        }
+
+        function ShowImposter(){
+            main.innerHTML = `<h2>The Imposter is: <b>${imposter}</b></h2><br><span>Imposter, what was the word?</span><br><input id="imposterCheck"><button onclick="checkImposterWord()">Check it</button>`;
+        }
+
+        function checkImposterWord(){
+            let theGuess = document.getElementById('imposterCheck').value
+            if(word.toLowerCase() === theGuess.toLowerCase()){
+                main.innerHTML = '<h2>Imposter was right!</h2><button onclick="nextRound()">Next round</button>';
+                points[imposter] = points[imposter] + 500;
+            } else {
+                main.innerHTML = '<h2>Imposter was wrong!</h2><button onclick="nextRound()">Next round</button>';
+                names.forEach(e => {
+                    if(imposter !== e){
+                        points[e] = points[e] + 250;
+                    }
+                });
+                points[imposter] = points[imposter] - 50;
+            }
+            updatePoints();
+        }
+
+        function nextRound(){
+            gamemode = false;
+            startGame();
+        }
+
+        function updatePoints(){
+            telePromter = '';
+            names.forEach(e => {
+                telePromter = telePromter + `${e}: ${points[e]}\n`;
+            });
+            pointsList.innerText = telePromter;
+        }
+    </script>
+</body>
+</html>
