@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaufen und Verkaufen</title>
+    <style>
+        body {
+            font-family: Arial;
+        }
+
+        button {
+            border-radius: 15px;
+            margin: 2.5px;
+            outline: none;
+            border: none;
+            color: white;
+        }
+
+        table {
+            border-spacing: 0px;
+            border-bottom: 1px solid black;
+            border-left: 1px solid black;
+        }
+
+        td {
+            border-right: 1px solid black;
+            border-top: 1px solid black;
+            padding: 5px;
+        }
+
+        #history {
+            overflow-x: hidden;
+            max-height: 250px;
+            height: 250px;
+            border: 1px solid black;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr><td>Name</td><td>Preis</td><td>Kaufen/Verkaufen</td><td>In Besitz</td><td>Investiert</td></tr>
+        </thead>
+        <tbody id="market"></tbody>
+    </table>
+    <h3 id="moneyDisplay"></h3><h3 id="costs"></h3>
+    <div id="history"></div>
+    <script>
+        const market = document.getElementById('market');
+        const stocks = [
+            {
+                id: 0,
+                name: "Gold",
+                price: 4576.00,
+                interval: 2,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 1,
+                name: "Rohöl",
+                price: 90.00,
+                interval: 1,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 2,
+                name: "Silber",
+                price: 67.00,
+                interval: 3,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 3,
+                name: "Titan",
+                price: 44.00,
+                interval: 2,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 4,
+                name: "Imobilien in Ost-Friesland",
+                price: 90000.00,
+                interval: 3,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 5,
+                name: "Bitcoin",
+                price: 56000.00,
+                interval: 2,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 6,
+                name: "Rheinmetall",
+                price: 4708.00,
+                interval: 2,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 7,
+                name: "Rolex",
+                price: 23000.00,
+                interval: 3,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 8,
+                name: "Deutsche Bahn",
+                price: 1.00,
+                interval: 1,
+                owned: 0,
+                invested: 0,
+            },
+            {
+                id: 9,
+                name: "Nukleare Sprengköpfe (Fat-Man)",
+                price: 9204.00,
+                interval: 3,
+                owned: 0,
+                invested: 0,
+            }
+        ];
+
+        let currentTick = 0;
+        let money = 1000.00;
+        let play = true;
+        let buffer = 2000;
+        let payday = undefined;
+        let borPay = [0,0];
+        let products = [];
+	let changeChance = 3; // 1/...
+
+        function generate() {
+            stocks.forEach(s => {
+                market.innerHTML += `
+                <tr id="${s.id}"><td>${s.name}</td><td id="pricer">${s.price}</td><td><button onclick="buy(${s.id})" class="buy-button">Kaufen</button><button onclick="sell(${s.id})" class="sell-button">Verkaufen</button></td><td id="owner">${s.owned}</td><td id="investor">${s.invested}</tr>`
+            });
+        }
+
+        function random(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function tick() {
+           currentTick++;
+           let depoMoney = 0;
+
+            stocks.forEach(s => {
+                let oldPrice = s.price;
+
+                if(random(1,changeChance) === 1) {
+                    if(s.price >= 100000) {
+                        s.price += random(-10000,10000);
+                    } else if(s.price >= 10000) {
+                        s.price += random(-1000,1000);
+                    } else if(s.price >= 1000) {
+                        s.price += random(-100,100);
+                    } else if(s.price >= 100) {
+                        s.price += random(-10,10);
+                    } else {
+                        s.price += random(-5,5);
+                    }
+                };
+
+                let newPrice = s.price;
+                let suffix;
+                if(oldPrice < newPrice) {
+                    suffix = '🟩';
+                } else if(oldPrice === newPrice) {
+                    suffix = '🟨';
+                } else if(oldPrice > newPrice) {
+                    suffix = '🟥';
+                }
+
+                const stock = document.getElementById(s.id.toString());
+                stock.querySelector('#pricer').innerText = suffix + ' ' + s.price.toFixed(2) + '€';
+                stock.querySelector('#owner').innerText = s.owned;
+                stock.querySelector('#investor').innerText = s.invested + ' | ' + s.price*s.owned.toFixed(2);
+
+                if(s.owned > 0) {
+                    stock.querySelector('.sell-button').style.backgroundColor = 'red';
+                } else {
+                    stock.querySelector('.sell-button').style.backgroundColor = 'grey';
+                }
+
+                if(s.price <= money && s.price > 0) {
+                    stock.querySelector('.buy-button').style.backgroundColor = 'lime';
+                } else {
+                    stock.querySelector('.buy-button').style.backgroundColor = 'grey';
+                }
+                depoMoney += s.price*s.owned;
+            });
+            if(play === true) {
+                setTimeout(tick,buffer);
+            }
+            document.getElementById('moneyDisplay').innerText = `Buget: ${money.toFixed(2)}\nDeop Wert: ${depoMoney.toFixed(2)}`;
+            work();
+        }
+
+        generate();
+        tick();
+
+        function buy(id) {
+            const s = stocks[id];
+            let oldPrice = s.price;
+            if(money >= s.price && s.price > 0) {
+                s.owned++;
+                money -= s.price;
+                console.log(`%cSTONKS! You bought an STONK of ${s.name} for the Price of ${s.price} €`,'color: white; background-color: green; padding: 5px; font-size: 25px;');
+                console.log(`%c${money.toFixed(2)} € Left`,'font-size: 15px;');
+                addHistory(s.name,s.price,'buy');
+                s.invested += s.price;
+            }
+            let newPrice = s.price;
+
+            let suffix;
+            if(oldPrice < newPrice) {
+                suffix = '🟩';
+            } else if(oldPrice === newPrice) {
+                suffix = '🟨';
+            } else if(oldPrice > newPrice) {
+                suffix = '🟥';
+            }
+            const stock = document.getElementById(s.id.toString());
+            stock.querySelector('#pricer').innerText = suffix + ' ' + s.price.toFixed(2) + '€';
+            stock.querySelector('#owner').innerText = s.owned;
+            stock.querySelector('#investor').innerText = s.invested + ' | ' + s.price*s.owned.toFixed(2);
+        }
+
+        function sell(id) {
+            const s = stocks[id];
+            let oldPrice = s.price;
+            if(stocks[id].owned > 0) {
+                s.owned--;
+                money += s.price;
+                console.log(`%cSTONKS! You solled an STONK of ${s.name} for the Price of ${s.price} €`,'color: white; background-color: red; padding: 5px; font-size: 25px;');
+                console.log(`%c${money.toFixed(2)} € Left`,'font-size: 15px;');
+                addHistory(s.name,s.price,'sell');
+                s.invested -= s.price;
+            }
+            let newPrice = s.price;
+
+            let suffix;
+            if(oldPrice < newPrice) {
+                suffix = '🟩';
+            } else if(oldPrice === newPrice) {
+                suffix = '🟨';
+            } else if(oldPrice > newPrice) {
+                suffix = '🟥';
+            }
+            const stock = document.getElementById(s.id.toString());
+            stock.querySelector('#pricer').innerText = suffix + ' ' + s.price.toFixed(2) + '€';
+            stock.querySelector('#owner').innerText = s.owned;
+            stock.querySelector('#investor').innerText = s.invested + ' | ' + (s.price*s.owned).toFixed(2);
+        }
+
+        function sellAll(id) {
+            for(let s = 1; s <= stocks[id].owned; s++) {
+                sell(id);
+            }
+        }
+
+        function addHistory(name,price,state) {
+            let text = '';
+            let color = '';
+            state === 'buy' ? text = 'gekauft' : text = 'verkauft';
+            state === 'buy' ? color = 'green' : color = 'red';
+            document.getElementById('history').innerHTML += `
+            <div style="background-color: ${color}; color: white;">
+                <span>${name}-Aktien wurden im Wert von ${price.toFixed(2)} € ${text}</span>
+                <br>
+            </div>
+            `;
+        }
+
+        function borrow(amount) {
+            if(payday === undefined){
+                payday = 60*2
+                money += amount;
+
+                borPay = [amount,0];
+                document.getElementById('costs').innerHTML = `
+                <button onclick="pay()">Geld Zahlen</button><span id="timeDisplay">${payday}</span> Sekunden
+                `;
+                tilPayday();
+            } else {
+                console.log('Du leist dir schon Geld!');
+            }
+        }
+
+        function tilPayday() {
+            document.getElementById('timeDisplay').innerText = payday;
+            if(payday > 0) {
+                payday--;
+                setTimeout(tilPayday,1000);
+            } else if(payday === 0) {
+                console.log('TIME IS OVER!');
+                document.body.innerHTML = '<h1>Du bist TOD</h1>';
+            } else if(payday === undefined) {
+                document.getElementById('costs').innerHTML = '';
+            }
+        }
+
+        function pay() {
+            if(money >= borPay[0]) {
+                money -= borPay[0];
+                console.log('schulden beglichen!');
+                payday = undefined;
+            } else if(money < borPay[0]) {
+                money -= money;
+                borPay[0] -= money;
+            }
+        }
+
+        const shop = [
+            {
+                item: "Bit-coin-miner",
+                price: 5000,
+                owned: 0,
+                level: 1
+            },
+            {
+                item: "'Komm in die Gruppe' berater",
+                price: 250,
+                owned: 0,
+                level: 1
+            },
+            {
+                item: "Cockie Klicker",
+                price: 5000,
+                owned: 0,
+                level: 1
+            },
+            {
+                item: "Kind (für kindergeld)",
+                price: 5,
+                owned: 0,
+                level: 1
+            },
+            
+        ]
+
+        function shopping(id) {
+            if(money >= shop[id].price) {
+                money -= shop[id].price;
+                products.push(id);
+                shop[id].owned++;
+            } else {
+                console.log('Nicht genug Geld!');
+            }
+        }
+
+        function work() {
+            products.forEach(p => {
+                if(p === 0) {
+                    if(random(1,2) === 1) {
+                        money += 250*shop[p].level;
+                    }
+                } else if(p === 2) {
+                    if(random(1,15) === 1) {
+                        money += 2000*shop[p].level;
+                    }
+                } else if(p === 3) {
+                    money += 5*shop[p].level;
+                } else if(p === 3) {
+                    if(random(1,3) !== 1) {
+                        money += 50*shop[p].level;
+                    } else {
+                        alert('JUGENDAMT: Ihre Kinder kommen ins Heim!');
+                        shop[p].owned = 0;
+                    }
+                }
+            })
+        }
+
+        function levelUp(id) {
+            if(money >= shop[id].price*2) {
+                shop[id].level++;
+            }
+        }
+
+        let falloutState = 10;
+        function bankCrash() {
+            stocks.forEach(s => {
+                s.price -= Number(s.price/3).toFixed(2);
+            });
+            if(falloutState === 0) {
+                stocks.forEach(s => {
+                    s.price = random(-1000,-10);
+                });
+            } else {
+                falloutState--;
+                setTimeout(bankCrash,falloutState*1000);
+            }
+        }
+
+	const cheat = {
+	    give: (amount) => {
+	        money += amount;
+		console.log('Succesfully CHeated \'give\'');
+	    },
+	    payInvestors: (id,wishPrice) => {
+		stocks[id].price = wishPrice;
+	    },
+	    dealWidthMafia: () => {
+		money -= 100;
+		payday = undefined;
+		borPay = [0,0];
+	    }
+	}
+    </script>
+  <!-- Styling is comming soon -->
+</body>
+</html>
